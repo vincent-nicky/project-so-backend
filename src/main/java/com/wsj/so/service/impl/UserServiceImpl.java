@@ -1,27 +1,20 @@
 package com.wsj.so.service.impl;
 
-import static com.wsj.so.constant.UserConstant.USER_LOGIN_STATE;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wsj.so.common.ErrorCode;
+import com.wsj.so.constant.CommonConstant;
+import com.wsj.so.exception.BusinessException;
 import com.wsj.so.mapper.UserMapper;
 import com.wsj.so.model.dto.user.UserQueryRequest;
+import com.wsj.so.model.entity.User;
 import com.wsj.so.model.enums.UserRoleEnum;
 import com.wsj.so.model.vo.LoginUserVO;
 import com.wsj.so.model.vo.UserVO;
-import com.wsj.so.utils.SqlUtils;
-import com.wsj.so.constant.CommonConstant;
-import com.wsj.so.exception.BusinessException;
-import com.wsj.so.model.entity.User;
 import com.wsj.so.service.UserService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
+import com.wsj.so.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -29,9 +22,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.wsj.so.constant.UserConstant.USER_LOGIN_STATE;
+
 /**
  * 用户服务实现
  *
+* 
  */
 @Service
 @Slf4j
@@ -40,7 +41,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 盐值，混淆密码
      */
-    private static final String SALT = "yupi";
+    private static final String SALT = "shaonian";
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -271,7 +272,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Page<UserVO> listUserVOByPage(UserQueryRequest userQueryRequest) {
+    public Page<UserVO> listUserVoByPage(UserQueryRequest userQueryRequest) {
+
         long current = userQueryRequest.getCurrent();
         long size = userQueryRequest.getPageSize();
         Page<User> userPage = this.page(new Page<>(current, size),
@@ -279,6 +281,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
         List<UserVO> userVO = this.getUserVO(userPage.getRecords());
         userVOPage.setRecords(userVO);
-        return userVOPage;
+        return  userVOPage;
     }
 }

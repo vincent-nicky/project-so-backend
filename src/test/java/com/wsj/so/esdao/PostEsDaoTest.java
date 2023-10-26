@@ -4,20 +4,22 @@ import com.wsj.so.model.dto.post.PostEsDTO;
 import com.wsj.so.model.dto.post.PostQueryRequest;
 import com.wsj.so.model.entity.Post;
 import com.wsj.so.service.PostService;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import javax.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 /**
  * 帖子 ES 操作测试
  *
+* 
  */
 @SpringBootTest
 public class PostEsDaoTest {
@@ -42,17 +44,15 @@ public class PostEsDaoTest {
         Page<PostEsDTO> PostPage = postEsDao.findAll(
                 PageRequest.of(0, 5, Sort.by("createTime")));
         List<PostEsDTO> postList = PostPage.getContent();
-        Optional<PostEsDTO> byId = postEsDao.findById(1L);
-        System.out.println(byId);
         System.out.println(postList);
     }
 
     @Test
     void testAdd() {
         PostEsDTO postEsDTO = new PostEsDTO();
-        postEsDTO.setId(2L);
-        postEsDTO.setTitle("鱼皮是小黑子");
-        postEsDTO.setContent("鱼皮的知识星球：https://yupi.icu，直播带大家做项目");
+        postEsDTO.setId(1L);
+        postEsDTO.setTitle("test");
+        postEsDTO.setContent("test");
         postEsDTO.setTags(Arrays.asList("java", "python"));
         postEsDTO.setUserId(1L);
         postEsDTO.setCreateTime(new Date());
@@ -77,11 +77,5 @@ public class PostEsDaoTest {
     void testFindByCategory() {
         List<PostEsDTO> postEsDaoTestList = postEsDao.findByUserId(1L);
         System.out.println(postEsDaoTestList);
-    }
-
-    @Test
-    void testFindByTitle() {
-        List<PostEsDTO> postEsDTOS = postEsDao.findByTitle("鱼狗");
-        System.out.println(postEsDTOS);
     }
 }

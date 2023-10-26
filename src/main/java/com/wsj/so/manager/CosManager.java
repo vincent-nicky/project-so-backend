@@ -4,14 +4,15 @@ import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.PutObjectResult;
 import com.wsj.so.config.CosClientConfig;
-
 import java.io.File;
 import javax.annotation.Resource;
+
 import org.springframework.stereotype.Component;
 
 /**
  * Cos 对象存储操作
  *
+* 
  */
 @Component
 public class CosManager {

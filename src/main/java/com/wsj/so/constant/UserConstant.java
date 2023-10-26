@@ -3,6 +3,7 @@ package com.wsj.so.constant;
 /**
  * 用户常量
  *
+* 
  */
 public interface UserConstant {
 

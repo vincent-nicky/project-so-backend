@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.Gson;
 import com.wsj.so.common.ErrorCode;
 import com.wsj.so.constant.CommonConstant;
+import com.wsj.so.exception.BusinessException;
+import com.wsj.so.exception.ThrowUtils;
 import com.wsj.so.mapper.PostFavourMapper;
 import com.wsj.so.mapper.PostMapper;
 import com.wsj.so.mapper.PostThumbMapper;
@@ -14,29 +16,19 @@ import com.wsj.so.model.dto.post.PostQueryRequest;
 import com.wsj.so.model.entity.Post;
 import com.wsj.so.model.entity.PostFavour;
 import com.wsj.so.model.entity.PostThumb;
+import com.wsj.so.model.entity.User;
 import com.wsj.so.model.vo.PostVO;
 import com.wsj.so.model.vo.UserVO;
+import com.wsj.so.service.PostService;
 import com.wsj.so.service.UserService;
 import com.wsj.so.utils.SqlUtils;
-import com.wsj.so.exception.BusinessException;
-import com.wsj.so.exception.ThrowUtils;
-import com.wsj.so.model.entity.User;
-import com.wsj.so.service.PostService;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -48,9 +40,13 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.stream.Collectors;
+
 /**
  * 帖子服务实现
- *
  */
 @Service
 @Slf4j
@@ -147,6 +143,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         long pageSize = postQueryRequest.getPageSize();
         String sortField = postQueryRequest.getSortField();
         String sortOrder = postQueryRequest.getSortOrder();
+
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         // 过滤
         boolQueryBuilder.filter(QueryBuilders.termQuery("isDelete", 0));
@@ -177,6 +174,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         // 按关键词检索
         if (StringUtils.isNotBlank(searchText)) {
             boolQueryBuilder.should(QueryBuilders.matchQuery("title", searchText));
+            boolQueryBuilder.should(QueryBuilders.matchQuery("description", searchText));
             boolQueryBuilder.should(QueryBuilders.matchQuery("content", searchText));
             boolQueryBuilder.minimumShouldMatch(1);
         }
@@ -198,8 +196,15 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         }
         // 分页
         PageRequest pageRequest = PageRequest.of((int) current, (int) pageSize);
+        //高亮显示
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("content");
+        highlightBuilder.field("title");
+        highlightBuilder.preTags("<font color='red'>");
+        highlightBuilder.postTags("</font>");
         // 构造查询
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+                .withHighlightBuilder(highlightBuilder)
                 .withPageable(pageRequest).withSorts(sortBuilder).build();
         SearchHits<PostEsDTO> searchHits = elasticsearchRestTemplate.search(searchQuery, PostEsDTO.class);
         Page<Post> page = new Page<>();
@@ -210,13 +215,25 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
             List<SearchHit<PostEsDTO>> searchHitList = searchHits.getSearchHits();
             List<Long> postIdList = searchHitList.stream().map(searchHit -> searchHit.getContent().getId())
                     .collect(Collectors.toList());
-            // 从数据库中取出更完整的数据
+            Map<String, List<SearchHit<PostEsDTO>>> highLightMap = searchHitList.stream().collect(Collectors.groupingBy(SearchHit::getId));
             List<Post> postList = baseMapper.selectBatchIds(postIdList);
             if (postList != null) {
                 Map<Long, List<Post>> idPostMap = postList.stream().collect(Collectors.groupingBy(Post::getId));
                 postIdList.forEach(postId -> {
                     if (idPostMap.containsKey(postId)) {
-                        resourceList.add(idPostMap.get(postId).get(0));
+                        Post post = idPostMap.get(postId).get(0);
+                        SearchHit<PostEsDTO> postEsDTOSearchHit = highLightMap.get(String.valueOf(postId)).get(0);
+                        if (postEsDTOSearchHit != null) {
+                            List<String> highlightTitleList = postEsDTOSearchHit.getHighlightField("title");
+                            List<String> highlightContentList = postEsDTOSearchHit.getHighlightField("content");
+                            if(CollectionUtils.isNotEmpty(highlightTitleList)){
+                                post.setTitle(highlightTitleList.get(0));
+                            }
+                            if(CollectionUtils.isNotEmpty(highlightContentList)){
+                                post.setContent(highlightContentList.get(0));
+                            }
+                        }
+                        resourceList.add(post);
                     } else {
                         // 从 es 清空 db 已物理删除的数据
                         String delete = elasticsearchRestTemplate.delete(String.valueOf(postId), PostEsDTO.class);
@@ -309,10 +326,10 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     }
 
     @Override
-    public Page<PostVO> listPostVOByPage(PostQueryRequest postQueryRequest, HttpServletRequest request) {
+    public Page<PostVO> listPostVoPage(PostQueryRequest postQueryRequest, HttpServletRequest request) {
         long current = postQueryRequest.getCurrent();
-        long pageSize = postQueryRequest.getPageSize();
-        Page<Post> postPage = this.page(new Page<>(current, pageSize),
+        long size = postQueryRequest.getPageSize();
+        Page<Post> postPage = this.page(new Page<>(current, size),
                 this.getQueryWrapper(postQueryRequest));
         return this.getPostVOPage(postPage, request);
     }

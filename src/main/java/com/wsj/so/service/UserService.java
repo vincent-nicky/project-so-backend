@@ -4,17 +4,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.wsj.so.model.dto.user.UserQueryRequest;
+import com.wsj.so.model.entity.User;
 import com.wsj.so.model.vo.LoginUserVO;
 import com.wsj.so.model.vo.UserVO;
-import com.wsj.so.model.entity.User;
-
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 用户服务
  *
+* 
  */
 public interface UserService extends IService<User> {
 
@@ -121,6 +122,7 @@ public interface UserService extends IService<User> {
     /**
      * 分页查询用户
      * @param userQueryRequest
+     * @return
      */
-    Page<UserVO> listUserVOByPage(UserQueryRequest userQueryRequest);
+    Page<UserVO> listUserVoByPage(UserQueryRequest userQueryRequest);
 }

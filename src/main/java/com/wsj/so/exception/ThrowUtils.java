@@ -5,6 +5,7 @@ import com.wsj.so.common.ErrorCode;
 /**
  * 抛异常工具类
  *
+* 
  */
 public class ThrowUtils {
 

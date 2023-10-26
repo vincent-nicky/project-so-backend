@@ -3,15 +3,17 @@ package com.wsj.so.model.vo;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wsj.so.model.entity.Post;
+import lombok.Data;
+import org.springframework.beans.BeanUtils;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import lombok.Data;
-import org.springframework.beans.BeanUtils;
 
 /**
  * 帖子视图
  *
+* 
  */
 @Data
 public class PostVO implements Serializable {

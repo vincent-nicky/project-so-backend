@@ -17,7 +17,6 @@
         createTime,updateTime
     </sql>
 
-
     <select id="listFavourPostByPage"
             resultType="com.wsj.so.model.entity.Post">
         select p.*

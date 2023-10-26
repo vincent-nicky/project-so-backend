@@ -3,15 +3,15 @@ package com.wsj.so.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wsj.so.common.ErrorCode;
+import com.wsj.so.exception.BusinessException;
 import com.wsj.so.mapper.PostThumbMapper;
 import com.wsj.so.model.entity.Post;
 import com.wsj.so.model.entity.PostThumb;
-import com.wsj.so.service.PostThumbService;
-import com.wsj.so.exception.BusinessException;
 import com.wsj.so.model.entity.User;
 import com.wsj.so.service.PostService;
-
+import com.wsj.so.service.PostThumbService;
 import javax.annotation.Resource;
+
 import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 帖子点赞服务实现
  *
+* 
  */
 @Service
 public class PostThumbServiceImpl extends ServiceImpl<PostThumbMapper, PostThumb>

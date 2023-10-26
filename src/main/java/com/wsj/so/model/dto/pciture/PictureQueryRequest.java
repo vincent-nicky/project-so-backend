@@ -1,4 +1,4 @@
-package com.wsj.so.model.dto.picture;
+package com.wsj.so.model.dto.pciture;
 
 import com.wsj.so.common.PageRequest;
 import lombok.Data;
@@ -9,6 +9,7 @@ import java.io.Serializable;
 /**
  * 查询请求
  *
+* 
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

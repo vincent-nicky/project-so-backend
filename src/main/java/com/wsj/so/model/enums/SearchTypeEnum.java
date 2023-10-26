@@ -6,16 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * 搜索类型枚举
- *
- */
+
 public enum SearchTypeEnum {
 
     POST("帖子", "post"),
     USER("用户", "user"),
     PICTURE("图片", "picture"),
-    VIDEO("视频", "video");
+    VIDEO("视频","video");
 
     private final String text;
 

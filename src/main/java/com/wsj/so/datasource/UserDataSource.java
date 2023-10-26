@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 /**
  * 用户服务实现
  *
+* 
  */
 @Service
 @Slf4j
@@ -24,9 +25,8 @@ public class UserDataSource implements DataSource<UserVO> {
     public Page<UserVO> doSearch(String searchText, long pageNum, long pageSize) {
         UserQueryRequest userQueryRequest = new UserQueryRequest();
         userQueryRequest.setUserName(searchText);
-        userQueryRequest.setCurrent(pageNum);
         userQueryRequest.setPageSize(pageSize);
-        Page<UserVO> userVOPage = userService.listUserVOByPage(userQueryRequest);
-        return userVOPage;
+        userQueryRequest.setCurrent(pageNum);
+        return userService.listUserVoByPage(userQueryRequest);
     }
 }

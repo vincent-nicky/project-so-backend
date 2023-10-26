@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,59 +28,63 @@ public class CrawlerTest {
     @Resource
     private PostService postService;
 
+
     @Test
-    void testFetchPicture() throws IOException {
-        int current = 1;
-        String url = "https://cn.bing.com/images/search?q=小黑子&first=" + current;
-        Document doc = Jsoup.connect(url).get();
-        Elements elements = doc.select(".iuscp.isv");
-        List<Picture> pictures = new ArrayList<>();
-        for (Element element : elements) {
-            // 取图片地址（murl）
-            String m = element.select(".iusc").get(0).attr("m");
-            Map<String, Object> map = JSONUtil.toBean(m, Map.class);
-            String murl = (String) map.get("murl");
-//            System.out.println(murl);
-            // 取标题
-            String title = element.select(".inflnk").get(0).attr("aria-label");
-//            System.out.println(title);
-            Picture picture = new Picture();
-            picture.setTitle(title);
-            picture.setUrl(murl);
-            pictures.add(picture);
-        }
-        System.out.println(pictures);
+    void testFetchVideo() {
+        String url = "https://www.bilibili.com/";
+        List<HttpCookie> cookieList = HttpRequest.get(url).execute().getCookies();
+        System.out.println(cookieList);
     }
 
     @Test
+    void testFetchPicture() throws IOException {
+        String url = "https://www.bing.com/images/search?q=%e6%9d%8e%e6%b2%81&form=HDRSC3&first=1";
+        Document doc = Jsoup.connect(url).get();
+        Elements elements = doc.select(".iuscp.varh.isv");
+        List<Picture> pictureList = new ArrayList<>();
+        for (Element element : elements) {
+            //图片地址
+            Picture picture = new Picture();
+            String m = element.select(".iusc").get(0).attr("m");
+            Map map = JSONUtil.toBean(m, Map.class);
+            String mUrl = (String) map.get("murl");
+
+            //图片标题
+            String title = element.select(".inflnk").get(0).attr("aria-label");
+            picture.setTitle(title);
+            picture.setUrl(mUrl);
+            pictureList.add(picture);
+        }
+    }
+
+
+    @Test
     void testFetchPassage() {
-        // 1. 获取数据
-        String json = "{\"current\":1,\"pageSize\":8,\"sortField\":\"createTime\",\"sortOrder\":\"descend\",\"category\":\"文章\",\"reviewStatus\":1}";
+
+        String json = "{\"current\":1,\"pageSize\":8,\"sortField\":\"createTime\",\"sortOrder\":\"descend\",\"category\":\"文章\",\"reviewStatus\":1}\n";
         String url = "https://www.code-nav.cn/api/post/search/page/vo";
-        String result = HttpRequest
-                .post(url)
+
+        String body = HttpRequest.post(url)
                 .body(json)
                 .execute()
                 .body();
-//        System.out.println(result);
-        // 2. json 转对象
-        Map<String, Object> map = JSONUtil.toBean(result, Map.class);
+        Map<String, Object> map = JSONUtil.toBean(body, Map.class);
+        System.out.println(map);
         JSONObject data = (JSONObject) map.get("data");
         JSONArray records = (JSONArray) data.get("records");
         List<Post> postList = new ArrayList<>();
-        for (Object record : records) {
-            JSONObject tempRecord = (JSONObject) record;
+        for (Object recode : records) {
             Post post = new Post();
-            post.setTitle(tempRecord.getStr("title"));
-            post.setContent(tempRecord.getStr("content"));
-            JSONArray tags = (JSONArray) tempRecord.get("tags");
-            List<String> tagList = tags.toList(String.class);
-            post.setTags(JSONUtil.toJsonStr(tagList));
-            post.setUserId(1L);
+            JSONObject tempRecode = (JSONObject) recode;
+            post.setTitle(tempRecode.getStr("title"));
+            post.setContent(tempRecode.getStr("content"));
+            JSONArray tags = tempRecode.getJSONArray("tags");
+            List<String> tagsList = tags.toList(String.class);
+            post.setTags(JSONUtil.toJsonStr(tagsList));
+            post.setUserId(1657380878698496002L);
             postList.add(post);
         }
-//        System.out.println(postList);
-        // 3. 数据入库
+        //数据入库
         boolean b = postService.saveBatch(postList);
         Assertions.assertTrue(b);
     }

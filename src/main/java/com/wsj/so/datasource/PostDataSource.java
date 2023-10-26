@@ -1,5 +1,4 @@
 package com.wsj.so.datasource;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wsj.so.model.dto.post.PostQueryRequest;
 import com.wsj.so.model.entity.Post;
@@ -16,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * 帖子服务实现
  *
+* 
  */
 @Service
 @Slf4j
@@ -27,13 +27,13 @@ public class PostDataSource implements DataSource<PostVO> {
     @Override
     public Page<PostVO> doSearch(String searchText, long pageNum, long pageSize) {
         PostQueryRequest postQueryRequest = new PostQueryRequest();
-        postQueryRequest.setSearchText(searchText);
         postQueryRequest.setCurrent(pageNum);
         postQueryRequest.setPageSize(pageSize);
-        ServletRequestAttributes servletRequestAttributes =  (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = servletRequestAttributes.getRequest();
+        postQueryRequest.setSearchText(searchText);
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = requestAttributes.getRequest();
         Page<Post> postPage = postService.searchFromEs(postQueryRequest);
-        return postService.getPostVOPage(postPage, request);
+        return postService.getPostVOPage(postPage,request);
     }
 }
 

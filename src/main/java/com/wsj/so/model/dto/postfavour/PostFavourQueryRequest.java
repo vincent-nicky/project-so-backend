@@ -2,14 +2,15 @@ package com.wsj.so.model.dto.postfavour;
 
 import com.wsj.so.common.PageRequest;
 import com.wsj.so.model.dto.post.PostQueryRequest;
-
 import java.io.Serializable;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
  * 帖子收藏查询请求
  *
+* 
  */
 @Data
 @EqualsAndHashCode(callSuper = true)

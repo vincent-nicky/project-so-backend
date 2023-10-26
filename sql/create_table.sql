@@ -1,10 +1,12 @@
 # 建表脚本
+# @author 少年
+#
 
 -- 创建库
-create database if not exists project_so;
+create database if not exists search_project;
 
 -- 切换库
-use project_so;
+use search_project;
 
 -- 用户表
 create table if not exists user
@@ -51,7 +53,6 @@ create table if not exists post_thumb
     index idx_postId (postId),
     index idx_userId (userId)
 ) comment '帖子点赞';
-
 
 -- 帖子收藏表（硬删除）
 create table if not exists post_favour

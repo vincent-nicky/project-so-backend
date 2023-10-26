@@ -4,20 +4,23 @@ import com.wsj.so.esdao.PostEsDao;
 import com.wsj.so.mapper.PostMapper;
 import com.wsj.so.model.dto.post.PostEsDTO;
 import com.wsj.so.model.entity.Post;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 增量同步帖子到 es
  *
+* 
  */
 // todo 取消注释开启任务
-//@Component
+@Component
 @Slf4j
 public class IncSyncPostToEs {
 
@@ -30,7 +33,7 @@ public class IncSyncPostToEs {
     /**
      * 每分钟执行一次
      */
-    @Scheduled(fixedRate = 60 * 1000)
+    @Scheduled(fixedRate = 60*1000)
     public void run() {
         // 查询近 5 分钟内的数据
         Date fiveMinutesAgoDate = new Date(new Date().getTime() - 5 * 60 * 1000L);

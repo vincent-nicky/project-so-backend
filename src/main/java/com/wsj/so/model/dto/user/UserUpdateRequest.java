@@ -1,11 +1,13 @@
 package com.wsj.so.model.dto.user;
 
-import java.io.Serializable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * 用户更新请求
  *
+* 
  */
 @Data
 public class UserUpdateRequest implements Serializable {

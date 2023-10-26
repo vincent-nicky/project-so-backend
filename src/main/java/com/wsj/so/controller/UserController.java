@@ -10,36 +10,28 @@ import com.wsj.so.config.WxOpenConfig;
 import com.wsj.so.constant.UserConstant;
 import com.wsj.so.exception.BusinessException;
 import com.wsj.so.exception.ThrowUtils;
+import com.wsj.so.model.dto.user.*;
 import com.wsj.so.model.entity.User;
 import com.wsj.so.model.vo.LoginUserVO;
 import com.wsj.so.model.vo.UserVO;
 import com.wsj.so.service.UserService;
-import com.wsj.so.model.dto.user.UserAddRequest;
-import com.wsj.so.model.dto.user.UserLoginRequest;
-import com.wsj.so.model.dto.user.UserQueryRequest;
-import com.wsj.so.model.dto.user.UserRegisterRequest;
-import com.wsj.so.model.dto.user.UserUpdateMyRequest;
-import com.wsj.so.model.dto.user.UserUpdateRequest;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.wsj.so.model.dto.user.*;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 用户接口
  *
+* 
  */
 @RestController
 @RequestMapping("/user")
@@ -216,7 +208,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/get")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @AuthCheck(mustRole = UserConstant.BAN_ROLE)
     public BaseResponse<User> getUserById(long id, HttpServletRequest request) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -275,7 +267,7 @@ public class UserController {
         long size = userQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<UserVO> userVOPage = userService.listUserVOByPage(userQueryRequest);
+        Page<UserVO> userVOPage = userService.listUserVoByPage(userQueryRequest);
         return ResultUtils.success(userVOPage);
     }
 
