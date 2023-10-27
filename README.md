@@ -7,7 +7,7 @@
 
 ## 二、项目架构
 
-<img src="./image/architecture.png" alt="image-20230515115642677" style="zoom:80%;" align="left"/>
+![architecture](https://cdn.jsdelivr.net/gh/vincent-nicky/image_store/blog/architecture.png)
 
 ## 三、技术栈
 
