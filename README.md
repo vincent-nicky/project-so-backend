@@ -7,7 +7,7 @@
 
 ## 二、项目架构
 
-![architecture](https://cdn.jsdelivr.net/gh/vincent-nicky/image_store/blog/architecture.png)
+![architecture](https://cdn.jsdelivr.net/gh/vincenicky/image_store/blog/architecture.png)
 
 ## 三、技术栈
 
@@ -42,12 +42,12 @@
 
 从`ElasticSearch`中搜索数据：
 
-![image-20231026214344762](https://cdn.jsdelivr.net/gh/vincent-nicky/image_store/blog/image-20231026214344762.png)
+![image-20231026214344762](https://cdn.jsdelivr.net/gh/vincenicky/image_store/blog/image-20231026214344762.png)
 
 使用`Jsoup`实时从`https://www.bing.com/images`中搜索图片：
 
-![image-20231026214448146](https://cdn.jsdelivr.net/gh/vincent-nicky/image_store/blog/image-20231026214448146.png)
+![image-20231026214448146](https://cdn.jsdelivr.net/gh/vincenicky/image_store/blog/image-20231026214448146.png)
 
 使用`HttpRequest`实时从`https://www.bilibili.com`中搜索视频：
 
-![image-20231026214802403](https://cdn.jsdelivr.net/gh/vincent-nicky/image_store/blog/image-20231026214802403.png)
+![image-20231026214802403](https://cdn.jsdelivr.net/gh/vincenicky/image_store/blog/image-20231026214802403.png)
